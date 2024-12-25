@@ -14,5 +14,9 @@
       "home": ".venv",
       "callable": "app"
     }
+  },
+
+  "access_log": {
+    "path": "/var/log/access.log"
   }
 }
