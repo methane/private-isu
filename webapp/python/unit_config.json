@@ -1,0 +1,18 @@
+{
+  "listeners": {
+    "*:8080": {
+      "pass": "applications/webapp"
+    }
+  },
+
+  "applications": {
+    "webapp": {
+      "type": "python 3",
+      "path": "/home/webapp",
+      "module": "app",
+      "working_directory": "/home/webapp",
+      "home": ".venv",
+      "callable": "app"
+    }
+  }
+}
