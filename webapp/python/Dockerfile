@@ -1,5 +1,4 @@
-#syntax=docker/dockerfile:1
-FROM ruby:3.4-slim
+FROM ghcr.io/astral-sh/uv:python3.13-bookworm
 
 RUN \
   --mount=type=cache,target=/var/lib/apt,sharing=locked \
@@ -7,11 +6,11 @@ RUN \
   apt-get update -qq && apt-get install -y build-essential default-libmysqlclient-dev
 
 RUN mkdir -p /home/webapp
-COPY Gemfile /home/webapp
-COPY Gemfile.lock /home/webapp
 WORKDIR /home/webapp
-RUN bundle config set --local path 'vendor/bundle'
-RUN bundle install
-COPY . /home/webapp
 
-ENTRYPOINT [ "bundle", "exec", "foreman", "start" ]
+COPY pyproject.toml uv.lock .
+RUN uv sync
+COPY . .
+
+CMD [ "/home/webapp/.venv/bin/gunicorn", "app:app", "-b", "0.0.0.0:8080", "--log-file", "-", "--access-logfile", "-" ]
+
