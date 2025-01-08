@@ -6,7 +6,9 @@ services:
       - app
     volumes:
       - ./etc/nginx/conf.d:/etc/nginx/conf.d
+      - ./etc/nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./public:/public
+      - ./log:/var/log
     ports:
       - "80:80"
     networks:
@@ -31,6 +33,7 @@ services:
       - my_network
     volumes:
       - ./public:/home/public
+      - ./log:/var/log
     init: true
     deploy:
       resources:
