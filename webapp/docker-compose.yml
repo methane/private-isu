@@ -29,8 +29,11 @@ services:
       ISUCONP_DB_PASSWORD: root
       ISUCONP_DB_NAME: isuconp
       ISUCONP_MEMCACHED_ADDRESS: memcached:11211
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://host.docker.internal:4318"
     networks:
       - my_network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - ./public:/home/public
       - ./log:/var/log

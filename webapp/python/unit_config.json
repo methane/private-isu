@@ -8,10 +8,12 @@
   "applications": {
     "webapp": {
       "type": "python 3",
+      "stdout": "/var/log/unit-app.log",
+      "stderr": "/var/log/unit-app.log",
       "path": "/home/webapp",
-      "module": "app",
       "working_directory": "/home/webapp",
       "home": ".venv",
+      "module": "app",
       "callable": "app"
     }
   },

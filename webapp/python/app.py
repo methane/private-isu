@@ -13,6 +13,47 @@ from jinja2 import pass_eval_context
 from markupsafe import Markup, escape
 from pymemcache.client.base import Client as MemcacheClient
 
+
+# otel setup
+from opentelemetry.instrumentation.pymemcache import PymemcacheInstrumentor
+
+PymemcacheInstrumentor().instrument()
+
+from opentelemetry.instrumentation.mysqlclient import MySQLClientInstrumentor
+
+MySQLClientInstrumentor().instrument()
+
+from opentelemetry.instrumentation.flask import FlaskInstrumentor
+# FlaskInstrumentor().instrument()
+
+from opentelemetry import trace
+from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.sdk.trace.export import SimpleSpanProcessor, ConsoleSpanExporter
+
+resource = Resource(attributes={"service.name": "private_isu_webapp"})
+
+trace.set_tracer_provider(TracerProvider(resource=resource))
+tracer = trace.get_tracer(__name__)
+otlp_exporter = OTLPSpanExporter()
+span_processor = BatchSpanProcessor(otlp_exporter)
+trace.get_tracer_provider().add_span_processor(span_processor)
+# trace.get_tracer_provider().add_span_processor(SimpleSpanProcessor(ConsoleSpanExporter()))
+print("set up otlp")
+# end otel setup
+
+# pyroscope setup
+import pyroscope
+
+pyroscope.configure(
+    application_name="private_isu_webapp",
+    server_address="http://host.docker.internal:4040",
+)
+print("pyroscope set up")
+
+
 UPLOAD_LIMIT = 10 * 1024 * 1024  # 10mb
 POSTS_PER_PAGE = 20
 
@@ -28,7 +69,7 @@ def config():
                 "host": os.environ.get("ISUCONP_DB_HOST", "localhost"),
                 "port": int(os.environ.get("ISUCONP_DB_PORT", "3306")),
                 "user": os.environ.get("ISUCONP_DB_USER", "root"),
-                "db": os.environ.get("ISUCONP_DB_NAME", "isuconp"),
+                "database": os.environ.get("ISUCONP_DB_NAME", "isuconp"),
             },
             "memcache": {
                 "address": os.environ.get(
@@ -175,6 +216,9 @@ app = flask.Flask(__name__, static_folder=str(static_path), static_url_path="")
 app.config["SESSION_TYPE"] = "memcached"
 app.config["SESSION_MEMCACHED"] = memcache()
 Session(app)
+
+print("instrument flask app")
+FlaskInstrumentor.instrument_app(app)
 
 
 @app.template_global()

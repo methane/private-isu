@@ -9,5 +9,12 @@ dependencies = [
     "flask-session[memcached]>=0.8.0",
     "gunicorn>=23.0.0",
     "mysqlclient~=2.2.7",
+    "opentelemetry-api>=1.29.0",
+    "opentelemetry-exporter-otlp-proto-http>=1.29.0",
+    "opentelemetry-instrumentation-flask>=0.50b0",
+    "opentelemetry-instrumentation-mysqlclient>=0.50b0",
+    "opentelemetry-instrumentation-pymemcache>=0.50b0",
+    "opentelemetry-sdk>=1.29.0",
     "pymemcache>=4.0.0",
+    "pyroscope-io>=0.8.8",
 ]
